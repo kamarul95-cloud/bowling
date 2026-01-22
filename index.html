@@ -5,42 +5,19 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    body { 
-      font-family: 'Inter', sans-serif; 
-      /* Background Gelap Moden */
-      background-color: #0f172a; 
-      color: #e2e8f0;
-      background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; 
+           background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%); }
+    .card-glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+    input, select, textarea { background-color: #1e293b !important; color: white !important; border: 1px solid #334155 !important; }
+    input:focus, select:focus, textarea:focus { border-color: #8b5cf6 !important; outline: none; box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3); }
+    div:where(.swal2-container) div:where(.swal2-popup) { background: #1e293b !important; color: #fff !important; border: 1px solid #475569; }
     
-    /* Effect Kaca Gelap (Dark Glassmorphism) */
-    .card-glass {
-      background: rgba(30, 41, 59, 0.7); 
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    input, select, textarea {
-      background-color: #1e293b !important; /* Slate-800 */
-      color: white !important;
-      border: 1px solid #334155 !important;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-      border-color: #8b5cf6 !important; /* Violet border focus */
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
-    }
-
-    /* Custom SweetAlert Dark Theme */
-    div:where(.swal2-container) div:where(.swal2-popup) {
-      background: #1e293b !important;
-      color: #fff !important;
-      border: 1px solid #475569;
-    }
+    /* Style untuk Disabled Option (Kuota Penuh) */
+    .option-disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
+    .badge-full { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
   </style>
 </head>
 <body class="min-h-screen py-8 px-4">
@@ -49,32 +26,40 @@
     <div class="inline-block p-4 rounded-full bg-slate-800 border border-slate-700 shadow-2xl mb-4">
       <img src="https://raw.githubusercontent.com/kamarul95-cloud/hostqamarul/refs/heads/main/logo%20logo%20pemuda%20pas.png" class="h-20 w-auto object-contain hover:scale-105 transition duration-300">
     </div>
-    <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-      Bowling Remaja
-    </h1>
+    <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Bowling Remaja</h1>
     <p class="text-slate-400 tracking-widest uppercase text-sm font-semibold mt-2">Piala DUN Bukit Tunggal 2026</p>
   </div>
 
   <div class="max-w-xl mx-auto">
+    
+    <div class="card-glass p-4 rounded-xl mb-6 border-l-4 border-yellow-500">
+      <h3 class="text-yellow-400 font-bold text-sm uppercase mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-database"></i> Ahli Berdaftar? Semak Sini
+      </h3>
+      <div class="flex gap-2">
+        <input type="number" id="searchIC" placeholder="Masukkan No. IC (Tanpa -)" class="w-full p-2 rounded-lg text-sm">
+        <button onclick="checkMemberDB()" type="button" class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 rounded-lg font-bold text-xs uppercase">
+          Semak
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mt-1">*Data anda akan diisi secara automatik jika rekod ditemui.</p>
+    </div>
+
     <form id="mainForm" onsubmit="handleFormSubmit(this)">
       
       <div class="card-glass p-6 rounded-2xl mb-6">
         <label class="block text-slate-300 font-bold text-sm uppercase tracking-wide mb-4 text-center">Mod Penyertaan</label>
-        
         <div class="grid grid-cols-2 gap-4">
           <label class="cursor-pointer">
             <input type="radio" name="jenisDaftar" value="Individu" required onchange="toggleForm('Individu')" class="peer sr-only">
-            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-blue-600 peer-checked:border-blue-400 peer-checked:shadow-lg peer-checked:shadow-blue-900/50 transition text-center">
-              <span class="block font-bold text-lg">Individu</span>
-              <span class="text-xs text-slate-400 peer-checked:text-blue-100">Solo Ranger</span>
+            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-blue-600 peer-checked:border-blue-400 transition text-center">
+              <span class="block font-bold text-lg">Individu</span><span class="text-xs text-slate-400 peer-checked:text-blue-100">Solo Ranger</span>
             </div>
           </label>
-          
           <label class="cursor-pointer">
             <input type="radio" name="jenisDaftar" value="Berkumpulan" required onchange="toggleForm('Berkumpulan')" class="peer sr-only">
-            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-purple-600 peer-checked:border-purple-400 peer-checked:shadow-lg peer-checked:shadow-purple-900/50 transition text-center">
-              <span class="block font-bold text-lg">Team</span>
-              <span class="text-xs text-slate-400 peer-checked:text-purple-100">Squad (4 Org)</span>
+            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-purple-600 peer-checked:border-purple-400 transition text-center">
+              <span class="block font-bold text-lg">Team</span><span class="text-xs text-slate-400 peer-checked:text-purple-100">Squad (4 Org)</span>
             </div>
           </label>
         </div>
@@ -85,33 +70,30 @@
         <input type="text" name="namaPasukan" class="w-full p-3 rounded-lg font-bold uppercase tracking-wide" placeholder="CTH: BUKIT TUNGGAL ESPORTS">
       </div>
 
-      <div id="participantsContainer">
-        </div>
+      <div id="participantsContainer"></div>
       
       <div id="paymentSection" class="hidden card-glass p-6 rounded-2xl mb-8 border-t-2 border-slate-600">
         <h3 class="text-white font-bold text-lg mb-4 flex items-center gap-2">💳 Kaedah Pembayaran</h3>
-        
         <div class="grid grid-cols-2 gap-4 mb-4">
            <label class="cursor-pointer">
             <input type="radio" name="jenisBayaran" value="Cash" onchange="togglePayment('Cash')" required class="peer sr-only">
-            <div class="p-3 rounded-lg border border-slate-600 bg-slate-800 peer-checked:bg-emerald-600 peer-checked:text-white transition text-center font-semibold">
-              💵 Tunai (Hari Kejadian)
-            </div>
+            <div class="p-3 rounded-lg border border-slate-600 bg-slate-800 peer-checked:bg-emerald-600 peer-checked:text-white transition text-center font-semibold">💵 Tunai</div>
           </label>
            <label class="cursor-pointer">
             <input type="radio" name="jenisBayaran" value="QR" onchange="togglePayment('QR')" required class="peer sr-only">
-            <div class="p-3 rounded-lg border border-slate-600 bg-slate-800 peer-checked:bg-pink-600 peer-checked:text-white transition text-center font-semibold">
-              📲 QR Pay
-            </div>
+            <div class="p-3 rounded-lg border border-slate-600 bg-slate-800 peer-checked:bg-pink-600 peer-checked:text-white transition text-center font-semibold">📲 QR Pay</div>
           </label>
         </div>
 
         <div id="qrContainer" class="hidden text-center bg-white p-4 rounded-xl">
            <p class="text-slate-800 text-sm font-bold mb-2">Imbas untuk Bayar</p>
+           <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ContohQRKodBendahari" class="mx-auto w-40 h-40 border-2 border-black mb-4">
            
-           <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ContohQRKodBendahari" class="mx-auto w-40 h-40 border-2 border-black">
-           
-           <p class="text-slate-600 text-xs mt-2">Sila simpan resit untuk rujukan.</p>
+           <div class="text-left bg-slate-100 p-3 rounded border border-slate-300">
+             <label class="block text-xs font-bold text-slate-700 mb-1">📤 Upload Resit / Dokumen (Wajib)</label>
+             <input type="file" id="uploadFile" multiple accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+             <p class="text-[10px] text-slate-500 mt-1">*Boleh pilih Gambar atau PDF. Boleh pilih lebih dari satu.</p>
+           </div>
         </div>
       </div>
 
@@ -120,104 +102,138 @@
       </button>
 
     </form>
-    
-    <div class="text-center text-slate-500 text-xs mt-8 pb-8">
-      Sistem Pendaftaran Digital DUN Bukit Tunggal
-    </div>
+    <div class="text-center text-slate-500 text-xs mt-8 pb-8">Sistem Pendaftaran Digital DUN Bukit Tunggal</div>
   </div>
 
   <script>
-    // 1. POPUP GREETING (Auto run bila page load)
+    // Global Variable untuk simpan Status Kuota
+    let quotaStatus = { lelakiFull: false, perempuanFull: false };
+
+    // 1. ON LOAD: Check Kuota dulu dari Server
     document.addEventListener('DOMContentLoaded', function() {
-      Swal.fire({
-        title: '🔥 Info Peserta',
-        html: `
-          <div class="text-left text-sm space-y-2">
-            <p>👋 <b>Assalamualaikum!</b></p>
-            <p>Sila baca info ini sebelum daftar:</p>
-            <ul class="list-disc pl-4 opacity-80">
-               <li>Pastikan IC & No Tel betul.</li>
-               <li>Yuran penyertaan boleh bayar via QR atau Cash.</li>
-               <li><b>Pecut!</b> Tempat adalah terhad.</li>
-            </ul>
-          </div>
-        `,
-        imageUrl: 'https://cdn-icons-png.flaticon.com/512/3163/3163228.png', // Icon Info
-        imageWidth: 60,
-        imageHeight: 60,
-        confirmButtonText: 'Faham & Teruskan',
-        confirmButtonColor: '#2563eb', // Blue-600 (Asal)
-        background: '#1e293b',
-        color: '#fff'
-      });
+      google.script.run.withSuccessHandler(function(status) {
+        quotaStatus = status;
+        console.log("Status Kuota:", status); // Debug
+        
+        // Popup Info
+        Swal.fire({
+          title: '🔥 Info Peserta',
+          html: `
+            <div class="text-left text-sm space-y-2">
+              <p>👋 <b>Assalamualaikum!</b></p>
+              <ul class="list-disc pl-4 opacity-80">
+                 <li>Lelaki: ${status.lelakiCount}/30 | Perempuan: ${status.perempuanCount}/30</li>
+                 <li>Jika kuota penuh, pilihan akan dikunci.</li>
+                 <li>Sila upload resit jika guna QR.</li>
+              </ul>
+            </div>`,
+          imageUrl: 'https://cdn-icons-png.flaticon.com/512/3163/3163228.png', imageWidth: 60, imageHeight: 60,
+          confirmButtonText: 'Faham', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
+        });
+      }).getQuotaStatus();
     });
 
     const cawanganList = ["Bukit Tunggal", "Telaga Daing", "Pulau Duyong", "Kepong", "Tebauk", "Lain-lain"];
 
+    // 2. CHECK MEMBER (DATABASE LOOKUP)
+    function checkMemberDB() {
+      let ic = document.getElementById('searchIC').value;
+      if(!ic) return Swal.fire('Ralat', 'Masukkan No. IC', 'warning');
+
+      Swal.fire({title: 'Sedang Semak...', didOpen: () => Swal.showLoading(), background:'#1e293b', color:'#fff'});
+      
+      google.script.run.withSuccessHandler(function(result) {
+        Swal.close();
+        if(result.found) {
+          Swal.fire({icon: 'success', title: 'Rekod Ditemui!', text: 'Borang akan diisi secara automatik.', background:'#1e293b', color:'#fff'});
+          
+          // Auto-fill Logic (Assuming Form Individu is active/or fill 1st person)
+          // Kita kena make sure form participants wujud dulu. Kalau belum, kita set ke Individu
+          if(document.getElementById('participantsContainer').innerHTML === "") {
+             document.querySelector('input[value="Individu"]').click();
+             setTimeout(() => fillData(result), 500); // Tunggu form render
+          } else {
+             fillData(result);
+          }
+        } else {
+          Swal.fire({icon: 'error', title: 'Tiada Rekod', text: 'Sila isi borang secara manual.', background:'#1e293b', color:'#fff'});
+        }
+      }).searchMember(ic);
+    }
+
+    function fillData(data) {
+      // Isi borang Peserta 1
+      if(document.getElementsByName('nama1')[0]) document.getElementsByName('nama1')[0].value = data.nama;
+      if(document.getElementsByName('tel1')[0]) document.getElementsByName('tel1')[0].value = data.tel;
+      if(document.getElementsByName('jantina1')[0]) document.getElementsByName('jantina1')[0].value = data.jantina;
+      if(document.getElementsByName('cawangan1')[0]) document.getElementsByName('cawangan1')[0].value = data.cawangan;
+      if(document.getElementsByName('alamat1')[0]) document.getElementsByName('alamat1')[0].value = data.alamat;
+      if(document.getElementsByName('ic1')[0]) document.getElementsByName('ic1')[0].value = document.getElementById('searchIC').value;
+    }
+
+    // 3. GENERATE HTML (With Quota Logic)
     function getParticipantHTML(index) {
       let title = index === 1 ? "PESERTA 1 (ANDA)" : `PESERTA ${index}`;
       let options = cawanganList.map(c => `<option value="${c}">${c}</option>`).join('');
 
+      // Check Quota untuk disable option
+      let disableLelaki = quotaStatus.lelakiFull ? 'disabled class="text-red-500"' : '';
+      let labelLelaki = quotaStatus.lelakiFull ? 'Lelaki (PENUH ⛔)' : 'Lelaki';
+      
+      let disablePuan = quotaStatus.perempuanFull ? 'disabled class="text-red-500"' : '';
+      let labelPuan = quotaStatus.perempuanFull ? 'Perempuan (PENUH ⛔)' : 'Perempuan';
+
       return `
       <div class="card-glass p-6 rounded-2xl mb-6 relative overflow-hidden animate-fade-in">
-        <h3 class="text-blue-400 font-bold text-lg mb-4 border-b border-slate-600 pb-2">
-          ${title}
-        </h3>
-        
+        <h3 class="text-blue-400 font-bold text-lg mb-4 border-b border-slate-600 pb-2">${title}</h3>
         <div class="space-y-4">
-          <div>
-            <label class="text-xs font-bold text-slate-400 uppercase">Nama Penuh</label>
-            <input type="text" name="nama${index}" class="w-full p-3 rounded-lg" required>
-          </div>
+          <div><label class="text-xs font-bold text-slate-400 uppercase">Nama Penuh</label><input type="text" name="nama${index}" class="w-full p-3 rounded-lg" required></div>
           <div class="grid grid-cols-3 gap-3">
-            <div class="col-span-2">
-              <label class="text-xs font-bold text-slate-400 uppercase">No. K/P</label>
-              <input type="number" name="ic${index}" class="w-full p-3 rounded-lg" placeholder="Tanpa -" required>
-            </div>
-            <div>
-              <label class="text-xs font-bold text-slate-400 uppercase">Umur</label>
-              <input type="number" name="umur${index}" class="w-full p-3 rounded-lg" required>
-            </div>
+            <div class="col-span-2"><label class="text-xs font-bold text-slate-400 uppercase">No. K/P</label><input type="number" name="ic${index}" class="w-full p-3 rounded-lg" placeholder="Tanpa -" required></div>
+            <div><label class="text-xs font-bold text-slate-400 uppercase">Umur</label><input type="number" name="umur${index}" class="w-full p-3 rounded-lg" required></div>
           </div>
           <div class="grid grid-cols-2 gap-3">
-             <div>
-              <label class="text-xs font-bold text-slate-400 uppercase">No. Tel</label>
-              <input type="tel" name="tel${index}" class="w-full p-3 rounded-lg" required>
-            </div>
-            <div>
-               <label class="text-xs font-bold text-slate-400 uppercase">Jantina</label>
-               <select name="jantina${index}" class="w-full p-3 rounded-lg" required>
+             <div><label class="text-xs font-bold text-slate-400 uppercase">No. Tel</label><input type="tel" name="tel${index}" class="w-full p-3 rounded-lg" required></div>
+             <div><label class="text-xs font-bold text-slate-400 uppercase">Jantina</label>
+               <select name="jantina${index}" class="w-full p-3 rounded-lg" required onchange="checkSelection(this)">
                  <option value="">- Pilih -</option>
-                 <option value="Lelaki">Lelaki</option>
-                 <option value="Perempuan">Perempuan</option>
+                 <option value="Lelaki" ${disableLelaki}>${labelLelaki}</option>
+                 <option value="Perempuan" ${disablePuan}>${labelPuan}</option>
                </select>
-            </div>
+             </div>
           </div>
-          <div>
-             <label class="text-xs font-bold text-slate-400 uppercase">Cawangan</label>
-             <select name="cawangan${index}" class="w-full p-3 rounded-lg" required>
-               <option value="">- Sila Pilih -</option>
-               ${options}
-             </select>
+          <div><label class="text-xs font-bold text-slate-400 uppercase">Cawangan</label>
+             <select name="cawangan${index}" class="w-full p-3 rounded-lg" required><option value="">- Sila Pilih -</option>${options}</select>
           </div>
-          <div>
-            <label class="text-xs font-bold text-slate-400 uppercase">Alamat</label>
-            <textarea name="alamat${index}" rows="2" class="w-full p-3 rounded-lg" required></textarea>
-          </div>
+          <div><label class="text-xs font-bold text-slate-400 uppercase">Alamat</label><textarea name="alamat${index}" rows="2" class="w-full p-3 rounded-lg" required></textarea></div>
         </div>
       </div>`;
     }
 
+    function checkSelection(select) {
+       // Backup logic kalau user inspect element enable balik
+       if(select.value === "Lelaki" && quotaStatus.lelakiFull) {
+         select.value = "";
+         Swal.fire('Maaf', 'Kuota Lelaki dah penuh!', 'error');
+       }
+       if(select.value === "Perempuan" && quotaStatus.perempuanFull) {
+         select.value = "";
+         Swal.fire('Maaf', 'Kuota Perempuan dah penuh!', 'error');
+       }
+    }
+
     function togglePayment(type) {
-        const qrContainer = document.getElementById('qrContainer');
+        const qr = document.getElementById('qrContainer');
+        const fileInput = document.getElementById('uploadFile');
         if (type === 'QR') {
-            qrContainer.classList.remove('hidden');
+            qr.classList.remove('hidden');
+            fileInput.setAttribute('required', 'true'); // Wajib upload kalau QR
         } else {
-            qrContainer.classList.add('hidden');
+            qr.classList.add('hidden');
+            fileInput.removeAttribute('required'); // Tak payah kalau Cash
         }
     }
 
-    // === INI BAHAGIAN YANG SAYA BETULKAN ===
     function toggleForm(type) {
       const container = document.getElementById('participantsContainer');
       const teamSection = document.getElementById('teamInfoSection');
@@ -229,66 +245,78 @@
       paymentSection.classList.remove('hidden'); 
 
       if (type === 'Individu') {
-        // --- POPUP INDIVIDU (ADA BALIK!) ---
-        Swal.fire({
-          icon: 'info',
-          title: 'Kategori Individu',
-          text: 'Anda akan dimasukkan ke dalam pasukan yang ditetapkan oleh urusetia.',
-          confirmButtonColor: '#2563eb',
-          background: '#1e293b',
-          color: '#fff'
-        });
-        // -----------------------------------
-
+        Swal.fire({ icon: 'info', title: 'Kategori Individu', text: 'Anda akan dimasukkan ke dalam pasukan rawak.', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' });
         teamSection.classList.add('hidden');
         teamSection.querySelector('input').removeAttribute('required');
         container.innerHTML = getParticipantHTML(1); 
       } 
       else if (type === 'Berkumpulan') {
-        // --- POPUP BERKUMPULAN (ADA BALIK!) ---
-        Swal.fire({
-          icon: 'success', // Guna ikon success biar nampak semangat
-          title: 'Kategori Berkumpulan',
-          text: 'Sila isikan butiran untuk 4 ORANG peserta.',
-          confirmButtonColor: '#9333ea', // Ungu
-          background: '#1e293b',
-          color: '#fff'
-        });
-        // -------------------------------------
-
+        Swal.fire({ icon: 'success', title: 'Kategori Berkumpulan', text: 'Sila isi 4 orang ahli.', confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
         teamSection.classList.remove('hidden');
         teamSection.querySelector('input').setAttribute('required', 'true');
-        for(let i=1; i<=4; i++) {
-          container.innerHTML += getParticipantHTML(i);
-        }
+        for(let i=1; i<=4; i++) container.innerHTML += getParticipantHTML(i);
       }
     }
 
-    function handleFormSubmit(formObject) {
+    // 4. SUBMIT DENGAN FILE UPLOAD
+    function handleFormSubmit(formElement) {
       event.preventDefault();
       const btn = document.getElementById('btnSubmit');
-      const originalText = btn.innerText;
-      
-      btn.innerText = "SEDANG HANTAR...";
+      btn.innerText = "SEDANG UPLOAD...";
       btn.disabled = true;
       btn.classList.add('opacity-50');
 
-      google.script.run.withSuccessHandler(function(response) {
-        Swal.fire({
-          icon: 'success',
-          title: 'BERES BOSKU!',
-          text: 'Pendaftaran diterima. Jumpa di sana.',
-          confirmButtonColor: '#8b5cf6', // Ungu (Asal)
-          background: '#1e293b',
-          color: '#fff'
-        }).then((result) => {
-           if (result.isConfirmed) location.reload(); 
+      // Kumpul semua input biasa
+      var formData = new FormData(formElement);
+      var formObject = {};
+      formData.forEach((value, key) => formObject[key] = value);
+
+      // Handle File Upload secara manual (Baca file -> Convert Base64)
+      var fileInput = document.getElementById('uploadFile');
+      var filesData = [];
+
+      // Helper function untuk baca file as Promise
+      const readFile = (file) => {
+        return new Promise((resolve, reject) => {
+          var reader = new FileReader();
+          reader.onload = (e) => resolve({
+            name: file.name,
+            mimeType: file.type,
+            data: e.target.result // Base64 string
+          });
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
         });
-      }).withFailureHandler(function(error){
-        btn.innerText = originalText;
-        btn.disabled = false;
-        Swal.fire('Ralat', 'Cuba lagi.', 'error');
-      }).processForm(formObject);
+      }
+
+      // Proses semua file (kalau ada)
+      var filePromises = [];
+      if (fileInput.files.length > 0) {
+        for(var i=0; i<fileInput.files.length; i++){
+          filePromises.push(readFile(fileInput.files[i]));
+        }
+      }
+
+      // Lepas semua file dah read, baru hantar ke GAS
+      Promise.all(filePromises).then(files => {
+        formObject.filesData = files; // Attach files ke object
+
+        google.script.run.withSuccessHandler(function(response) {
+          Swal.fire({
+            icon: 'success', title: 'ALHAMDULILLAH!', text: 'Pendaftaran & Fail berjaya dihantar.',
+            confirmButtonColor: '#8b5cf6', background: '#1e293b', color: '#fff'
+          }).then((result) => { if (result.isConfirmed) location.reload(); });
+        }).withFailureHandler(function(error){
+           btn.innerText = "CUBA LAGI";
+           btn.disabled = false;
+           btn.classList.remove('opacity-50');
+           Swal.fire('Ralat', error.message, 'error');
+        }).processForm(formObject);
+
+      }).catch(err => {
+         Swal.fire('Ralat Fail', 'Gagal memproses fail.', 'error');
+         btn.disabled = false;
+      });
     }
   </script>
 </body>
