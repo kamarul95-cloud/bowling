@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pendaftaran Bowling DUN Bukit Tunggal</title>
+  <base target="_top">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
@@ -11,29 +9,37 @@
   <style>
     body { 
       font-family: 'Inter', sans-serif; 
+      /* Background Gelap Moden */
       background-color: #0f172a; 
       color: #e2e8f0;
       background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
     }
+    
+    /* Effect Kaca Gelap (Dark Glassmorphism) */
     .card-glass {
       background: rgba(30, 41, 59, 0.7); 
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     }
+
     input, select, textarea {
-      background-color: #1e293b !important;
+      background-color: #1e293b !important; /* Slate-800 */
       color: white !important;
       border: 1px solid #334155 !important;
     }
+    
     input:focus, select:focus, textarea:focus {
-      border-color: #8b5cf6 !important;
+      border-color: #8b5cf6 !important; /* Violet border focus */
       outline: none;
       box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
     }
+
+    /* Custom SweetAlert Dark Theme */
     div:where(.swal2-container) div:where(.swal2-popup) {
       background: #1e293b !important;
       color: #fff !important;
+      border: 1px solid #475569;
     }
   </style>
 </head>
@@ -50,21 +56,23 @@
   </div>
 
   <div class="max-w-xl mx-auto">
-    <form id="mainForm">
+    <form id="mainForm" onsubmit="handleFormSubmit(this)">
       
       <div class="card-glass p-6 rounded-2xl mb-6">
         <label class="block text-slate-300 font-bold text-sm uppercase tracking-wide mb-4 text-center">Mod Penyertaan</label>
+        
         <div class="grid grid-cols-2 gap-4">
           <label class="cursor-pointer">
             <input type="radio" name="jenisDaftar" value="Individu" required onchange="toggleForm('Individu')" class="peer sr-only">
-            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-blue-600 peer-checked:border-blue-400 transition text-center">
+            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-blue-600 peer-checked:border-blue-400 peer-checked:shadow-lg peer-checked:shadow-blue-900/50 transition text-center">
               <span class="block font-bold text-lg">Individu</span>
               <span class="text-xs text-slate-400 peer-checked:text-blue-100">Solo Ranger</span>
             </div>
           </label>
+          
           <label class="cursor-pointer">
             <input type="radio" name="jenisDaftar" value="Berkumpulan" required onchange="toggleForm('Berkumpulan')" class="peer sr-only">
-            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-purple-600 peer-checked:border-purple-400 transition text-center">
+            <div class="p-4 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 peer-checked:bg-purple-600 peer-checked:border-purple-400 peer-checked:shadow-lg peer-checked:shadow-purple-900/50 transition text-center">
               <span class="block font-bold text-lg">Team</span>
               <span class="text-xs text-slate-400 peer-checked:text-purple-100">Squad (4 Org)</span>
             </div>
@@ -77,15 +85,17 @@
         <input type="text" name="namaPasukan" class="w-full p-3 rounded-lg font-bold uppercase tracking-wide" placeholder="CTH: BUKIT TUNGGAL ESPORTS">
       </div>
 
-      <div id="participantsContainer"></div>
+      <div id="participantsContainer">
+        </div>
       
       <div id="paymentSection" class="hidden card-glass p-6 rounded-2xl mb-8 border-t-2 border-slate-600">
         <h3 class="text-white font-bold text-lg mb-4 flex items-center gap-2">💳 Kaedah Pembayaran</h3>
+        
         <div class="grid grid-cols-2 gap-4 mb-4">
            <label class="cursor-pointer">
             <input type="radio" name="jenisBayaran" value="Cash" onchange="togglePayment('Cash')" required class="peer sr-only">
             <div class="p-3 rounded-lg border border-slate-600 bg-slate-800 peer-checked:bg-emerald-600 peer-checked:text-white transition text-center font-semibold">
-              💵 Tunai
+              💵 Tunai (Hari Kejadian)
             </div>
           </label>
            <label class="cursor-pointer">
@@ -95,70 +105,119 @@
             </div>
           </label>
         </div>
+
         <div id="qrContainer" class="hidden text-center bg-white p-4 rounded-xl">
            <p class="text-slate-800 text-sm font-bold mb-2">Imbas untuk Bayar</p>
+           
            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ContohQRKodBendahari" class="mx-auto w-40 h-40 border-2 border-black">
-           <p class="text-slate-600 text-xs mt-2">Sila simpan resit.</p>
+           
+           <p class="text-slate-600 text-xs mt-2">Sila simpan resit untuk rujukan.</p>
         </div>
       </div>
 
-      <button type="submit" id="btnSubmit" class="hidden w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition text-lg uppercase tracking-widest">
+      <button type="submit" id="btnSubmit" class="hidden w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-black py-4 rounded-xl shadow-lg shadow-purple-900/50 hover:brightness-110 transition transform active:scale-95 text-lg uppercase tracking-widest">
         Sahkan Penyertaan
       </button>
 
     </form>
-    <div class="text-center text-slate-500 text-xs mt-8 pb-8">Sistem Pendaftaran Digital DUN Bukit Tunggal</div>
+    
+    <div class="text-center text-slate-500 text-xs mt-8 pb-8">
+      Sistem Pendaftaran Digital DUN Bukit Tunggal
+    </div>
   </div>
 
   <script>
-    // ==========================================
-    // ⚠️ PENTING: PASTE URL GAS ANDA DI SINI
-    // ==========================================
-    const SCRIPT_URL = "PASTE_URL_WEB_APP_GAS_ANDA_DI_SINI_YANG_HUJUNG_DIA_EXEC"; 
-
-    // Greeting Popup
+    // 1. POPUP GREETING (Auto run bila page load)
     document.addEventListener('DOMContentLoaded', function() {
       Swal.fire({
         title: '🔥 Info Peserta',
-        html: `<div class="text-left text-sm space-y-2"><p>👋 <b>Assalamualaikum!</b></p><p>Sila baca info ini sebelum daftar:</p><ul class="list-disc pl-4 opacity-80"><li>Pastikan IC & No Tel betul.</li><li>Yuran penyertaan boleh bayar via QR atau Cash.</li></ul></div>`,
-        imageUrl: 'https://cdn-icons-png.flaticon.com/512/3163/3163228.png', imageWidth: 60, imageHeight: 60,
-        confirmButtonText: 'Faham & Teruskan', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
+        html: `
+          <div class="text-left text-sm space-y-2">
+            <p>👋 <b>Assalamualaikum!</b></p>
+            <p>Sila baca info ini sebelum daftar:</p>
+            <ul class="list-disc pl-4 opacity-80">
+               <li>Pastikan IC & No Tel betul.</li>
+               <li>Yuran penyertaan boleh bayar via QR atau Cash.</li>
+               <li><b>Pecut!</b> Tempat adalah terhad.</li>
+            </ul>
+          </div>
+        `,
+        imageUrl: 'https://cdn-icons-png.flaticon.com/512/3163/3163228.png', // Icon Info
+        imageWidth: 60,
+        imageHeight: 60,
+        confirmButtonText: 'Faham & Teruskan',
+        confirmButtonColor: '#2563eb', // Blue-600 (Asal)
+        background: '#1e293b',
+        color: '#fff'
       });
     });
 
     const cawanganList = ["Bukit Tunggal", "Telaga Daing", "Pulau Duyong", "Kepong", "Tebauk", "Lain-lain"];
 
-    // Function Generate HTML Peserta (Sama macam dulu)
     function getParticipantHTML(index) {
       let title = index === 1 ? "PESERTA 1 (ANDA)" : `PESERTA ${index}`;
       let options = cawanganList.map(c => `<option value="${c}">${c}</option>`).join('');
+
       return `
       <div class="card-glass p-6 rounded-2xl mb-6 relative overflow-hidden animate-fade-in">
-        <h3 class="text-blue-400 font-bold text-lg mb-4 border-b border-slate-600 pb-2">${title}</h3>
+        <h3 class="text-blue-400 font-bold text-lg mb-4 border-b border-slate-600 pb-2">
+          ${title}
+        </h3>
+        
         <div class="space-y-4">
-          <div><label class="text-xs font-bold text-slate-400 uppercase">Nama Penuh</label><input type="text" name="nama${index}" class="w-full p-3 rounded-lg" required></div>
+          <div>
+            <label class="text-xs font-bold text-slate-400 uppercase">Nama Penuh</label>
+            <input type="text" name="nama${index}" class="w-full p-3 rounded-lg" required>
+          </div>
           <div class="grid grid-cols-3 gap-3">
-            <div class="col-span-2"><label class="text-xs font-bold text-slate-400 uppercase">No. K/P</label><input type="number" name="ic${index}" class="w-full p-3 rounded-lg" placeholder="Tanpa -" required></div>
-            <div><label class="text-xs font-bold text-slate-400 uppercase">Umur</label><input type="number" name="umur${index}" class="w-full p-3 rounded-lg" required></div>
+            <div class="col-span-2">
+              <label class="text-xs font-bold text-slate-400 uppercase">No. K/P</label>
+              <input type="number" name="ic${index}" class="w-full p-3 rounded-lg" placeholder="Tanpa -" required>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-400 uppercase">Umur</label>
+              <input type="number" name="umur${index}" class="w-full p-3 rounded-lg" required>
+            </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
-             <div><label class="text-xs font-bold text-slate-400 uppercase">No. Tel</label><input type="tel" name="tel${index}" class="w-full p-3 rounded-lg" required></div>
-             <div><label class="text-xs font-bold text-slate-400 uppercase">Jantina</label>
-               <select name="jantina${index}" class="w-full p-3 rounded-lg" required><option value="">- Pilih -</option><option value="Lelaki">Lelaki</option><option value="Perempuan">Perempuan</option></select>
-             </div>
+             <div>
+              <label class="text-xs font-bold text-slate-400 uppercase">No. Tel</label>
+              <input type="tel" name="tel${index}" class="w-full p-3 rounded-lg" required>
+            </div>
+            <div>
+               <label class="text-xs font-bold text-slate-400 uppercase">Jantina</label>
+               <select name="jantina${index}" class="w-full p-3 rounded-lg" required>
+                 <option value="">- Pilih -</option>
+                 <option value="Lelaki">Lelaki</option>
+                 <option value="Perempuan">Perempuan</option>
+               </select>
+            </div>
           </div>
-          <div><label class="text-xs font-bold text-slate-400 uppercase">Cawangan</label>
-             <select name="cawangan${index}" class="w-full p-3 rounded-lg" required><option value="">- Sila Pilih -</option>${options}</select>
+          <div>
+             <label class="text-xs font-bold text-slate-400 uppercase">Cawangan</label>
+             <select name="cawangan${index}" class="w-full p-3 rounded-lg" required>
+               <option value="">- Sila Pilih -</option>
+               ${options}
+             </select>
           </div>
-          <div><label class="text-xs font-bold text-slate-400 uppercase">Alamat</label><textarea name="alamat${index}" rows="2" class="w-full p-3 rounded-lg" required></textarea></div>
+          <div>
+            <label class="text-xs font-bold text-slate-400 uppercase">Alamat</label>
+            <textarea name="alamat${index}" rows="2" class="w-full p-3 rounded-lg" required></textarea>
+          </div>
         </div>
       </div>`;
     }
 
-    // Toggle Payment & Form
     function togglePayment(type) {
-        document.getElementById('qrContainer').classList.toggle('hidden', type !== 'QR');
+        const qrContainer = document.getElementById('qrContainer');
+        if (type === 'QR') {
+            qrContainer.classList.remove('hidden');
+        } else {
+            qrContainer.classList.add('hidden');
+        }
     }
+
+    // === INI BAHAGIAN YANG SAYA BETULKAN ===
     function toggleForm(type) {
       const container = document.getElementById('participantsContainer');
       const teamSection = document.getElementById('teamInfoSection');
@@ -170,57 +229,67 @@
       paymentSection.classList.remove('hidden'); 
 
       if (type === 'Individu') {
+        // --- POPUP INDIVIDU (ADA BALIK!) ---
+        Swal.fire({
+          icon: 'info',
+          title: 'Kategori Individu',
+          text: 'Anda akan dimasukkan ke dalam pasukan yang ditetapkan oleh urusetia.',
+          confirmButtonColor: '#2563eb',
+          background: '#1e293b',
+          color: '#fff'
+        });
+        // -----------------------------------
+
         teamSection.classList.add('hidden');
         teamSection.querySelector('input').removeAttribute('required');
         container.innerHTML = getParticipantHTML(1); 
-      } else {
+      } 
+      else if (type === 'Berkumpulan') {
+        // --- POPUP BERKUMPULAN (ADA BALIK!) ---
+        Swal.fire({
+          icon: 'success', // Guna ikon success biar nampak semangat
+          title: 'Kategori Berkumpulan',
+          text: 'Sila isikan butiran untuk 4 ORANG peserta.',
+          confirmButtonColor: '#9333ea', // Ungu
+          background: '#1e293b',
+          color: '#fff'
+        });
+        // -------------------------------------
+
         teamSection.classList.remove('hidden');
         teamSection.querySelector('input').setAttribute('required', 'true');
-        for(let i=1; i<=4; i++) container.innerHTML += getParticipantHTML(i);
+        for(let i=1; i<=4; i++) {
+          container.innerHTML += getParticipantHTML(i);
+        }
       }
     }
 
-    // HANDLE SUBMIT KE GAS (Fetch API)
-    const form = document.getElementById('mainForm');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      
-      if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbys1zsgzkw-NddAAELO_WDGn9P2kk0e_B_IF1dkhtR3Mx4vXL1NWOk8r6vWxEoIt8Yd/exec" || SCRIPT_URL === "") {
-        Swal.fire('Ralat', 'URL Script belum diset! Sila contact admin.', 'error');
-        return;
-      }
-
+    function handleFormSubmit(formObject) {
+      event.preventDefault();
       const btn = document.getElementById('btnSubmit');
       const originalText = btn.innerText;
+      
       btn.innerText = "SEDANG HANTAR...";
       btn.disabled = true;
       btn.classList.add('opacity-50');
 
-      // Tukar data form jadi JSON Object
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      // Hantar guna FETCH
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        mode: 'no-cors' // Penting untuk elak error CORS dari Google
-      })
-      .then(() => {
-        // "no-cors" maksudnya kita tak boleh baca response, so kita assume Berjaya kalau takde error network
+      google.script.run.withSuccessHandler(function(response) {
         Swal.fire({
-          icon: 'success', title: 'BERES BOSKU!', text: 'Pendaftaran diterima.',
-          confirmButtonColor: '#8b5cf6', background: '#1e293b', color: '#fff'
-        }).then((result) => { if (result.isConfirmed) location.reload(); });
-      })
-      .catch(error => {
-        console.error('Error!', error.message);
+          icon: 'success',
+          title: 'BERES BOSKU!',
+          text: 'Pendaftaran diterima. Jumpa di sana.',
+          confirmButtonColor: '#8b5cf6', // Ungu (Asal)
+          background: '#1e293b',
+          color: '#fff'
+        }).then((result) => {
+           if (result.isConfirmed) location.reload(); 
+        });
+      }).withFailureHandler(function(error){
         btn.innerText = originalText;
         btn.disabled = false;
-        btn.classList.remove('opacity-50');
-        Swal.fire('Ralat', 'Ada masalah internet. Cuba lagi.', 'error');
-      });
-    });
+        Swal.fire('Ralat', 'Cuba lagi.', 'error');
+      }).processForm(formObject);
+    }
   </script>
 </body>
 </html>
