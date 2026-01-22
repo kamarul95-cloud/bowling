@@ -225,14 +225,13 @@
       paymentSection.classList.remove('hidden'); 
 
       if (type === 'Individu') {
-        Swal.fire({ icon: 'info', title: 'Individu', text: "Jika anda pilih Individu, anda akan dimasukkan ke dalam pasukan yang ditetapkan oleh urusetia."*
-* **Form Fields:** Hanya papar set butiran untuk **seorang** peserta.', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' });
+        Swal.fire({ icon: 'info', title: 'Individu', text: 'Jika anda pilih Individu, anda akan dimasukkan ke dalam pasukan yang ditetapkan oleh urusetia.', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' });
         teamSection.classList.add('hidden');
         teamSection.querySelector('input').removeAttribute('required');
         container.innerHTML = getParticipantHTML(1); 
       } 
       else if (type === 'Berkumpulan') {
-        Swal.fire({ icon: 'success', title: 'Berkumpulan', text: "Anda boleh menetapkan ahli pasukan anda masing-masing. Seorang wakil sahaja perlu isi bagi pihak kumpulan.", confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
+        Swal.fire({ icon: 'success', title: 'Berkumpulan', text: 'Anda boleh menetapkan ahli pasukan anda masing-masing. Seorang wakil sahaja perlu isi bagi pihak kumpulan.', confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
         teamSection.classList.remove('hidden');
         teamSection.querySelector('input').setAttribute('required', 'true');
         for(let i=1; i<=4; i++) container.innerHTML += getParticipantHTML(i);
