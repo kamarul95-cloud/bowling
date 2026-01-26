@@ -17,12 +17,8 @@
     input:focus, select:focus, textarea:focus { border-color: #8b5cf6 !important; outline: none; box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3); }
     div:where(.swal2-container) div:where(.swal2-popup) { background: #1e293b !important; color: #fff !important; border: 1px solid #475569; }
     
-    /* Style Khas untuk Disabled Option */
-    option:disabled {
-      color: #ff8888;
-      background-color: #2d1a1a;
-      font-style: italic;
-    }
+    /* Style untuk Disabled Option (Bila Penuh) */
+    option:disabled { color: #ff8888; background-color: #2d1a1a; font-style: italic; }
   </style>
 </head>
 <body class="min-h-screen py-8 px-4">
@@ -44,8 +40,9 @@
       <h3 class="text-yellow-400 font-bold text-sm uppercase mb-2 flex items-center gap-2">
         <i class="fa-solid fa-database"></i> Semakan Ahli (Auto-Fill)
       </h3>
+      
       <div class="flex flex-col gap-2">
-        <select id="targetSlot" class="p-2 rounded-lg text-sm bg-slate-800 border border-yellow-700 text-yellow-100">
+        <select id="targetSlot" class="p-2 rounded-lg text-sm bg-slate-800 border border-yellow-700 text-yellow-100 font-bold">
            <option value="1">Isi ke: Peserta 1 (Anda)</option>
            <option value="2">Isi ke: Peserta 2</option>
            <option value="3">Isi ke: Peserta 3</option>
@@ -122,38 +119,46 @@
 
   <script>
     // ==========================================
-    // ⚠️ PASTE URL DEPLOYMENT BARU (YG V3.0)
+    // ⚠️ PASTIKAN URL INI ADALAH DEPLOYMENT BARU ANDA (YANG SUPPORT 6 ORANG)
     // ==========================================
-    const SCRIPT_URL = "PASTE_URL_BARU_DI_SINI"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3nRuzAtwySi4TNTqnbjsHP5YTRLuZYdfG-ivdf4TfV-oK6i2Q_VrQH9jV39TFybMc/exec"; 
     // ==========================================
 
     let quotaStatus = { lelakiFull: false, perempuanFull: false };
     const cawanganList = ["Bukit Tunggal", "Telaga Daing", "Pulau Duyong", "Kepong", "Tebauk", "Lain-lain"];
 
+    // 1. INITIAL LOAD
     document.addEventListener('DOMContentLoaded', function() {
-      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "getQuota" }) })
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "getQuota" })
+      })
       .then(res => res.json())
       .then(data => {
         quotaStatus = data;
-        // Kita tak payah popup dah la, semak je
-        console.log("Status Kuota:", data);
-      });
+        // console.log("Status:", data); // Debug
+      })
+      .catch(err => console.error("Error fetching quota:", err));
     });
 
+    // 2. CHECK MEMBER (UPDATE DENGAN SLOT)
     function checkMemberDB() {
       let ic = document.getElementById('searchIC').value;
-      let targetSlot = document.getElementById('targetSlot').value; // Ambil slot mana nak isi
+      let targetSlot = document.getElementById('targetSlot').value; // Ambil slot
       
       if(!ic) return Swal.fire('Ralat', 'Masukkan No. IC', 'warning');
       
-      // Check kalau form untuk slot tu wujud
+      // Check kalau form untuk slot tu wujud (contoh: user pilih slot 5 tapi mod Individu)
       if(!document.getElementsByName('nama' + targetSlot)[0]) {
-         return Swal.fire('Ralat', `Slot Peserta ${targetSlot} belum dibuka. Sila pilih Kategori Berkumpulan dulu.`, 'warning');
+         return Swal.fire('Ralat', `Slot Peserta ${targetSlot} tiada. Sila tukar ke mod Berkumpulan.`, 'warning');
       }
 
       Swal.fire({title: 'Sedang Semak...', didOpen: () => Swal.showLoading(), background:'#1e293b', color:'#fff'});
 
-      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "searchMember", ic: ic }) })
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "searchMember", ic: ic })
+      })
       .then(res => res.json())
       .then(result => {
         Swal.close();
@@ -167,6 +172,7 @@
     }
 
     function fillData(data, slot) {
+      // Slot dynamic (nama1, nama2, etc...)
       const setVal = (name, val) => { if(document.getElementsByName(name + slot)[0]) document.getElementsByName(name + slot)[0].value = val; };
       setVal('nama', data.nama);
       setVal('tel', data.tel);
@@ -176,12 +182,12 @@
       setVal('ic', document.getElementById('searchIC').value);
     }
 
+    // 3. GENERATE HTML (UPDATE LOGIC DISABLED OPTION)
     function getParticipantHTML(index) {
       let title = index === 1 ? "PESERTA 1 (ANDA)" : `PESERTA ${index}`;
       let options = cawanganList.map(c => `<option value="${c}">${c}</option>`).join('');
       
-      // LOGIC DISABLE OPTION
-      // Kita disable <option> secara spesifik. Kalau full, user nampak tapi tak boleh klik.
+      // LOGIC: Kalau penuh, tambah attribute 'disabled'
       let disableLelaki = quotaStatus.lelakiFull ? 'disabled' : '';
       let labelLelaki = quotaStatus.lelakiFull ? 'Lelaki (PENUH ⛔)' : 'Lelaki';
       let disablePuan = quotaStatus.perempuanFull ? 'disabled' : '';
@@ -217,8 +223,13 @@
     function togglePayment(type) {
         const qr = document.getElementById('qrContainer');
         const fileInput = document.getElementById('uploadFile');
-        if (type === 'QR') { qr.classList.remove('hidden'); fileInput.setAttribute('required', 'true'); } 
-        else { qr.classList.add('hidden'); fileInput.removeAttribute('required'); }
+        if (type === 'QR') {
+            qr.classList.remove('hidden');
+            fileInput.setAttribute('required', 'true');
+        } else {
+            qr.classList.add('hidden');
+            fileInput.removeAttribute('required');
+        }
     }
 
     function toggleForm(type) {
@@ -238,16 +249,32 @@
         container.innerHTML = getParticipantHTML(1); 
       } 
       else if (type === 'Berkumpulan') {
-        Swal.fire({ icon: 'success', title: 'Berkumpulan', text: 'Sila lengkapkan butiran 6 orang.', confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
+        Swal.fire({ icon: 'success', title: 'Berkumpulan', text: 'Sila lengkapkan data 6 orang peserta.', confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
         teamSection.classList.remove('hidden');
         teamSection.querySelector('input').setAttribute('required', 'true');
-        // UPDATE SINI: LOOP JADI 6
+        // UPDATE: LOOP JADI 6
         for(let i=1; i<=6; i++) container.innerHTML += getParticipantHTML(i);
       }
     }
 
+    // 4. SUBMIT DENGAN FILE UPLOAD (Via Fetch API)
     document.getElementById('mainForm').addEventListener('submit', function(e) {
       e.preventDefault();
+      
+      // === UPDATE: BLOCKER JIKA KUOTA PENUH ===
+      // Check peserta pertama (Ketua) punya jantina
+      const jantina1Element = document.getElementsByName('jantina1')[0];
+      if (jantina1Element) {
+         const val = jantina1Element.value;
+         if (val === 'Lelaki' && quotaStatus.lelakiFull) {
+           return Swal.fire('Penuh!', 'Maaf, kuota LELAKI telah penuh. Borang tidak boleh dihantar.', 'error');
+         }
+         if (val === 'Perempuan' && quotaStatus.perempuanFull) {
+           return Swal.fire('Penuh!', 'Maaf, kuota PEREMPUAN telah penuh. Borang tidak boleh dihantar.', 'error');
+         }
+      }
+      // ========================================
+
       if(SCRIPT_URL.includes("PASTE_URL")) return Swal.fire('Ralat', 'URL Script belum diset!', 'error');
 
       const btn = document.getElementById('btnSubmit');
@@ -257,10 +284,12 @@
 
       var formData = new FormData(this);
       var formObject = Object.fromEntries(formData.entries());
-      formObject.action = "submitForm"; 
+      formObject.action = "submitForm"; // Beritahu backend ini ialah SUBMIT
 
+      // Handle Files
       var fileInput = document.getElementById('uploadFile');
       var filePromises = [];
+      
       if (fileInput.files.length > 0) {
         Array.from(fileInput.files).forEach(file => {
           filePromises.push(new Promise((resolve, reject) => {
@@ -273,30 +302,35 @@
       }
 
       Promise.all(filePromises).then(files => {
-        formObject.filesData = files; 
+        formObject.filesData = files; // Attach files
 
-        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(formObject) })
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(formObject) // Hantar semua data sebagai JSON String
+        })
         .then(res => res.json())
         .then(response => {
-           if(response.status === "success") { 
-             // === CLOSING: GRUP LINK & URUSETIA ===
+           if(response.status === "success" || response.status === undefined) { 
+             
+             // UPDATE: CLOSING DENGAN LINK WHATSAPP
              Swal.fire({
                 icon: 'success', 
                 title: 'PENDAFTARAN BERJAYA!', 
                 html: `
                   <div class="text-left space-y-4">
-                    <p>Terima kasih. Sila join Group WhatsApp rasmi:</p>
-                    <a href="https://chat.whatsapp.com/LINK_GROUP_ANDA" target="_blank" class="block w-full bg-green-600 text-white text-center py-3 rounded-lg font-bold hover:bg-green-700">
-                       <i class="fa-brands fa-whatsapp"></i> JOIN GROUP WHATSAPP
+                    <p>Terima kasih. Sila join Group WhatsApp rasmi untuk info lanjut:</p>
+                    <a href="https://chat.whatsapp.com/GANTI_LINK_GROUP_SINI" target="_blank" class="block w-full bg-green-600 text-white text-center py-3 rounded-lg font-bold hover:bg-green-700 hover:scale-105 transition">
+                       <i class="fa-brands fa-whatsapp"></i> KLIK SINI JOIN GROUP
                     </a>
                     <hr class="border-gray-600">
-                    <p class="text-xs text-center">Masalah? Hubungi <a href="https://wa.me/60123456789" class="text-blue-400 underline">Urusetia</a></p>
+                    <p class="text-xs text-center text-slate-400">Masalah? Hubungi <a href="https://wa.me/60199999999" target="_blank" class="text-blue-400 underline">Urusetia</a></p>
                   </div>
                 `,
-                confirmButtonColor: '#1e293b', 
                 confirmButtonText: 'Tutup',
+                confirmButtonColor: '#1e293b', 
                 background: '#1e293b', color: '#fff'
              }).then((result) => { if (result.isConfirmed) location.reload(); });
+
            } else {
              throw new Error(JSON.stringify(response));
            }
