@@ -328,6 +328,85 @@
         });
       });
     });
+
+    // ============================================================
+    // 4. FUNCTION UNTUK BUTANG KUNING ATAS (GLOBAL CHECK)
+    // ============================================================
+    function checkMemberDB() {
+      // Ambil nilai dari kotak input kuning di atas
+      let icVal = document.getElementById('searchIC').value; 
+      // Nota: Pastikan ID input di HTML atas tu ialah id="searchIC"
+      
+      if(!icVal) return Swal.fire('Ralat', 'Masukkan No. IC', 'warning');
+
+      Swal.fire({
+          title: 'Sedang Semak...', 
+          html: 'Mencari rekod lama...',
+          didOpen: () => Swal.showLoading(), 
+          background:'#1e293b', 
+          color:'#fff'
+      });
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "searchMember", ic: icVal })
+      })
+      .then(res => res.json())
+      .then(result => {
+        Swal.close(); // Tutup loading
+        
+        if(result.found) {
+          // Kalau jumpa, kita anggap dia adalah Ketua (Peserta 1)
+          Swal.fire({
+              icon: 'success', 
+              title: 'Rekod Ditemui!', 
+              text: 'Data anda dimasukkan ke slot Peserta 1.', 
+              background:'#1e293b', 
+              color:'#fff',
+              timer: 1500,
+              showConfirmButton: false
+          });
+
+          // 1. Auto-select Individu dulu supaya form keluar (kalau belum buka)
+          // Jika tuan nak dia auto-select team, boleh ubah logic ni
+          const radioIndividu = document.querySelector('input[value="Individu"]');
+          if(radioIndividu && !radioIndividu.checked) {
+              radioIndividu.click();
+          }
+
+          // Tunggu sekejap (500ms) untuk form render, baru isi data
+          setTimeout(() => {
+              if(document.getElementsByName('nama1')[0]) {
+                  document.getElementsByName('nama1')[0].value = result.nama;
+                  document.getElementsByName('tel1')[0].value = result.tel;
+                  document.getElementsByName('jantina1')[0].value = result.jantina;
+                  document.getElementsByName('cawangan1')[0].value = result.cawangan;
+                  document.getElementsByName('alamat1')[0].value = result.alamat;
+                  document.getElementsByName('ic1')[0].value = icVal;
+                  
+                  // Update juga kotak semak kecil di dalam kad Peserta 1 supaya nampak sama
+                  if(document.getElementById('searchIC_1')) {
+                      document.getElementById('searchIC_1').value = icVal;
+                  }
+              }
+          }, 500);
+
+        } else {
+          Swal.fire({
+              icon: 'error', 
+              title: 'Tiada Rekod', 
+              text: 'Sila isi borang secara manual.', 
+              background:'#1e293b', 
+              color:'#fff'
+          });
+        }
+      })
+      .catch(err => {
+          Swal.close();
+          console.error(err);
+          Swal.fire('Ralat Sistem', 'Sila cuba sebentar lagi.', 'error');
+      });
+    }
   </script>
 </body>
 </html>
