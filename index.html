@@ -109,8 +109,10 @@
       </button>
 
     </form>
-    <div class="text-center text-slate-500 text-xs mt-8 pb-8">Sistem Pendaftaran Digital DUN Bukit Tunggal</div>
-  </div>
+    <div class="text-center text-slate-500 text-xs mt-8 pb-8">
+  Sistem Pendaftaran Digital DUN Bukit Tunggal<br>
+  <span class="opacity-50">Developed by Qamar</span>
+</div>
 
   <script>
     // ==========================================
@@ -292,13 +294,13 @@
       paymentSection.classList.remove('hidden'); 
 
       if (type === 'Individu') {
-        Swal.fire({ icon: 'info', title: 'Individu', text: 'Anda akan dimasukkan ke dalam Pasukan yang ditetapkan oleh Urusetia', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' });
+        Swal.fire({ icon: 'info', title: 'Individu', text: 'Anda akan dimasukkan ke dalam Pasukan yang ditetapkan oleh Urusetia.', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' });
         teamSection.classList.add('hidden');
         teamSection.querySelector('input').removeAttribute('required');
         container.innerHTML = getParticipantHTML(1); 
       } 
       else if (type === 'Berkumpulan') {
-        Swal.fire({ icon: 'success', title: 'Berkumpulan', text: 'Anda boleh mencipta Pasukan sendiri, wajib isi 6 orang sekaligus', confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
+        Swal.fire({ icon: 'success', title: 'Berkumpulan', text: 'Anda boleh mencipta Pasukan sendiri, wajib isi 6 orang sekaligus.', confirmButtonColor: '#9333ea', background: '#1e293b', color: '#fff' });
         teamSection.classList.remove('hidden');
         teamSection.querySelector('input').setAttribute('required', 'true');
         // LOOP 6 KALI UNTUK TEAM
@@ -344,22 +346,32 @@
         .then(res => res.json())
         .then(response => {
            if(response.status === "success") {
-             // 4. CLOSING PAGE (WHATSAPP)
+             // 4. CLOSING PAGE (WHATSAPP + TRADEMARK)
              Swal.fire({
                icon: 'success', 
                title: 'PENDAFTARAN BERJAYA!', 
                html: `
                 <div class="space-y-4 mt-4">
-                  <p class="text-sm text-slate-300">Terima kasih mendaftar. Sila masuk ke group WhatsApp rasmi:</p>
+                  <p class="text-sm text-slate-300">Terima kasih. Sila join group WhatsApp:</p>
+                  
                   <a href="https://chat.whatsapp.com/JkPxseJt68YKeMTqB9D3TX" target="_blank" class="block w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-500 flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> JOIN GROUP WHATSAPP
+                    <i class="fa-brands fa-whatsapp text-xl"></i> GROUP WHATSAPP
                   </a>
+                  
                   <hr class="border-slate-600">
+                  
                   <p class="text-xs text-slate-400">Sebarang pertanyaan hubungi:</p>
                   <div class="flex gap-2">
                     <a href="https://wa.me/60196034517" target="_blank" class="flex-1 bg-slate-700 p-2 rounded-lg text-xs hover:bg-slate-600">📞 Syafa</a>
                     <a href="https://wa.me/60105226472" target="_blank" class="flex-1 bg-slate-700 p-2 rounded-lg text-xs hover:bg-slate-600">📞 Qamar</a>
                   </div>
+
+                  <div class="mt-6 pt-4 border-t border-slate-700/50">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">
+                      Sistem dibangunkan oleh <span class="text-blue-400 font-bold">Qamar</span> 🚀
+                    </p>
+                  </div>
+
                 </div>
                `,
                confirmButtonText: 'Tutup',
