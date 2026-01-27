@@ -184,7 +184,7 @@
 
     // 4. GENERATE HTML (VERSI STRICT DISABLE + SEMAK INDIVIDU)
     function getParticipantHTML(index) {
-      let title = index === 1 ? "PESERTA 1 (KETUA)" : `PESERTA ${index}`;
+      let title = index === 1 ? "PESERTA 1" : `PESERTA ${index}`;
       let options = cawanganList.map(c => `<option value="${c}">${c}</option>`).join('');
       
       // LOGIC STRICT: Tukar terus struktur option HTML
